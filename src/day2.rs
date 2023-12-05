@@ -1,4 +1,5 @@
 use std::{
+    cmp::max,
     fs::File,
     io::{BufRead, BufReader},
 };
@@ -60,6 +61,10 @@ impl Rgb {
             g: self.g + other.g,
             b: self.b + other.b,
         }
+    }
+
+    fn power(&self) -> u32 {
+        self.r * self.g * self.b
     }
 
     fn parse(input: &str) -> IResult<&str, Self> {
@@ -135,13 +140,7 @@ mod tests {
 
 // -- Main ---------------------------------------------------------------------
 
-pub fn main() -> Result<()> {
-    let reader = BufReader::new(File::open("data/input/2.txt")?);
-    let games = reader
-        .lines()
-        .map(|line| Game::parse(&line.unwrap()).unwrap().1)
-        .collect::<Vec<_>>();
-
+fn part1(games: Vec<Game>) -> i32 {
     let mut id_sum = 0;
     for game in &games {
         if game
@@ -152,6 +151,30 @@ pub fn main() -> Result<()> {
             id_sum += game.id;
         }
     }
-    println!("{}", id_sum);
+    id_sum
+}
+
+fn part2(games: Vec<Game>) -> u32 {
+    let mut powers = 0;
+    for game in &games {
+        powers += game
+            .reveals
+            .iter()
+            .fold(Rgb::default(), |a, b| {
+                Rgb::new(max(a.r, b.r), max(a.g, b.g), max(a.b, b.b))
+            })
+            .power()
+    }
+    powers
+}
+
+pub fn main() -> Result<()> {
+    let reader = BufReader::new(File::open("data/input/2.txt")?);
+    let games = reader
+        .lines()
+        .map(|line| Game::parse(&line.unwrap()).unwrap().1)
+        .collect::<Vec<_>>();
+
+    println!("{}", part2(games));
     Ok(())
 }
