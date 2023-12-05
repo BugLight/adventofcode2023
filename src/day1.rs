@@ -1,9 +1,9 @@
-use std::{io::BufReader, io::BufRead, fs::File};
 use anyhow::Result;
-use nom::IResult;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::combinator::{iterator, map};
+use nom::IResult;
+use std::{fs::File, io::BufRead, io::BufReader};
 
 // -- Helpers ------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ fn parse_token(str: &str) -> IResult<&str, char> {
         map(tag("eight"), |_| '8'),
         map(tag("nine"), |_| '9'),
         map(tag("zero"), |_| '0'),
-        nom::character::complete::anychar
+        nom::character::complete::anychar,
     ))(str)
 }
 
@@ -28,7 +28,8 @@ fn parse_callibration_value(str: &str) -> i32 {
     let tokens = tokens_iterator.collect::<Vec<char>>();
     let _ = tokens_iterator.finish();
 
-    let digits = tokens.iter()
+    let digits = tokens
+        .iter()
         .filter(|t| t.is_ascii_digit())
         .map(|c| c.to_digit(10).unwrap() as i32)
         .collect::<Vec<i32>>();
@@ -58,7 +59,8 @@ mod tests {
 
 pub fn main() -> Result<()> {
     let reader = BufReader::new(File::open("data/input/1.txt")?);
-    let answer: i32 = reader.lines()
+    let answer: i32 = reader
+        .lines()
         .map(|line| parse_callibration_value(&line.unwrap()))
         .sum();
     println!("{}", answer);
