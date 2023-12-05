@@ -1,7 +1,24 @@
 use anyhow::Result;
+use clap::Parser;
 
 pub mod day1;
+pub mod day2;
+
+/// Run advent of code program
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Day of the challenge
+    #[arg(short, long)]
+    day: u8,
+}
 
 fn main() -> Result<()> {
-    day1::main()
+    let cli = Cli::parse();
+
+    match cli.day {
+        1 => day1::main(),
+        2 => day2::main(),
+        _ => Err(anyhow::Error::msg("No such day")),
+    }
 }
