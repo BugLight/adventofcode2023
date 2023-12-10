@@ -128,7 +128,9 @@ mod tests {
 
     #[test]
     fn test_game_parse() -> Result<()> {
-        let (rest, game) = Game::parse("Game 1: 1 red, 2 green, 3 blue; 4 red, 5 green, 6 blue")?;
+        let (rest, game) = Game::parse(
+            "Game 1: 1 red, 2 green, 3 blue; 4 red, 5 green, 6 blue",
+        )?;
 
         assert_eq!(rest, "");
         assert_eq!(game.id, 1);

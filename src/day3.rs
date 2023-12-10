@@ -23,7 +23,12 @@ fn is_part(c: &char) -> bool {
     !c.is_digit(10) && *c != '.'
 }
 
-fn is_part_number(scheme: &Scheme, line: usize, mut begin: usize, mut end: usize) -> bool {
+fn is_part_number(
+    scheme: &Scheme,
+    line: usize,
+    mut begin: usize,
+    mut end: usize,
+) -> bool {
     if begin > 0 {
         begin -= 1;
     }
@@ -40,7 +45,9 @@ fn is_part_number(scheme: &Scheme, line: usize, mut begin: usize, mut end: usize
         return true;
     }
 
-    if line < scheme.len() - 1 && scheme[line + 1][begin..end].iter().any(is_part) {
+    if line < scheme.len() - 1
+        && scheme[line + 1][begin..end].iter().any(is_part)
+    {
         return true;
     }
 
