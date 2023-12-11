@@ -1,5 +1,5 @@
 use std::{
-    collections::HashSet,
+    collections::{HashMap, HashSet},
     fs::File,
     io::{BufRead, BufReader},
 };
@@ -115,6 +115,42 @@ fn part1(cards: &Vec<Card>) {
     );
 }
 
+fn part2(cards: &Vec<Card>) {
+    #[derive(Debug)]
+    enum Node {
+        Return(usize, usize),
+        Call(usize),
+    }
+
+    let mut stack: Vec<Node> = (0..cards.len()).map(Node::Call).collect();
+    let mut cache = HashMap::new();
+    let mut s = 0;
+
+    while !stack.is_empty() {
+        match stack.pop().unwrap() {
+            Node::Return(id, prev) => {
+                s += 1;
+                cache.insert(id, s);
+                s += prev;
+            }
+            Node::Call(id) => {
+                if cache.contains_key(&id) {
+                    s += cache[&id];
+                } else {
+                    stack.push(Node::Return(id, s));
+                    s = 0;
+                    let wins = cards[id].winning_numbers_count();
+                    stack.append(
+                        &mut (id + 1..id + wins + 1).map(Node::Call).collect(),
+                    );
+                }
+            }
+        }
+    }
+
+    println!("Part 2: {}", s);
+}
+
 pub fn main() -> Result<()> {
     let reader = BufReader::new(File::open("data/input/4.txt")?);
     let cards = reader
@@ -123,5 +159,6 @@ pub fn main() -> Result<()> {
         .collect::<Vec<_>>();
 
     part1(&cards);
+    part2(&cards);
     Ok(())
 }
